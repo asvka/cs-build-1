@@ -28,6 +28,8 @@ class Game extends React.Component{
     }
     state = {
         cells: [],
+        interval: 100,
+        isRunning: false,
     }
     makeEmptyBoard() {
         let board = [];
@@ -58,10 +60,10 @@ class Game extends React.Component{
             y: (rect.top + window.pageYOffset) - doc.clientTop,
         };
     }
-    handleClick = (event) => {
+    handleClick = (e) => {
         const elemOffset = this.getElementOffset();
-        const offsetX = event.clientX - elemOffset.x;
-        const offsetY = event.clientY - elemOffset.y;
+        const offsetX = e.clientX - elemOffset.x;
+        const offsetY = e.clientY - elemOffset.y;
 
         const x = Math.floor(offsetX / CELL_SIZE);
         const y = Math.floor(offsetY / CELL_SIZE);
@@ -71,8 +73,66 @@ class Game extends React.Component{
         }
         this.setState({ cells: this.makeCells() });
     }
+    runGame = () => {
+        this.setState({ isRunning: true });
+        this.runIteration();
+    }
+    stopGame = () => {
+        this.setState({ isRunning: false });
+        if (this.timeoutHandler) {
+            window.clearTimeout(this.timeoutHandler);
+            this.timeoutHandler = null;
+        }
+    }
+    handleIntervalChanges = (e) => {
+        this.setState({ interval: e.target.value  });
+    }
+    runIteration() {
+        console.log('Iteration running...');
+        let newBoard = this.makeEmptyBoard();
+
+        for (let y = 0; y < this.rows; y++){
+            for (let x = 0; x < this.cols; x++){
+                let neighbors = this.assessNeighbor(this.board, x, y);
+                if (this.board[y][x]){
+                    if (neighbors === 2 || neighbors === 3){
+                        newBoard[y][x] = true;
+                    } else {
+                        newBoard[y][x] = true;
+                    }
+                } else {
+                    if (!this.board[y][x] && neighbors === 3){
+                        newBoard[y][x] = true;
+                    }
+                }
+            }
+        }
+
+        this.board = newBoard;
+        this.setState({ cells: this.makeCells() })
+
+        this.timeoutHandler = window.setTimeout(() => {
+            this.runIteration();   
+        }, this.state.interval);
+    }
+    assessNeighbor(board, x, y) {
+        let neighbors = 0;
+        const directions = [[-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1]];
+        for (let i = 0; i < directions.length; i++) {
+            const dir = directions[i];
+            let y1 = y + dir[0];
+            let x1 = x + dir[1];
+
+            if (x1 >= 0 && x1 < this.cols && y1 >= 0 && y1 < this.rows && board[y1][x1]) {
+                neighbors++;
+            }
+        }
+
+        return neighbors;
+    }
+
     render() {
-        const { cells } = this.state;
+        const { cells, interval, isRunning } = this.state;
         
         return (
             <div>
@@ -89,6 +149,11 @@ class Game extends React.Component{
                                     key={`${cell.x},${cell.y}`}
                                     />
                                 ))}
+                    </div>
+                    <div className = 'ctrl'>Update every <input value={this.state.interval} onChange={this.handleIntervalChanges}/> msec 
+                    {isRunning ?
+                    <button className='btn' onClick={this.stopGame}>Stop</button> :
+                    <button className='btn' onClick={this.runGame}>Run</button> }
                     </div>
             </div>
         )
