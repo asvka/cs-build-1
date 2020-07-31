@@ -1,7 +1,7 @@
 import React from 'react'
 import './game.css'
 
-const CELL_SIZE = 20
+const CELL_SIZE = 10
 const WIDTH = 800
 const HEIGHT = 600
 
@@ -28,8 +28,9 @@ class Game extends React.Component{
     }
     state = {
         cells: [],
-        interval: 100,
+        interval: 1000,
         isRunning: false,
+        generation: 0,
     }
     makeEmptyBoard() {
         let board = [];
@@ -73,6 +74,22 @@ class Game extends React.Component{
         }
         this.setState({ cells: this.makeCells() });
     }
+    handleRandomColor = () => {
+        this.setState({ pickColor: true})
+    }
+
+    handleClear = () => {
+        this.board = this.makeEmptyBoard();
+        this.setState({ cells: this.makeCells(), generation: 0 });
+    }
+    handleRandom = () => {
+        for (let y = 0; y < this.rows; y++){
+            for (let x = 0; x < this.cols; x++){
+                this.board[y][x] = (Math.random() >= 0.70);
+            }
+        }
+        this.setState({ cells: this.makeCells() });
+    }
     runGame = () => {
         this.setState({ isRunning: true });
         this.runIteration();
@@ -85,7 +102,7 @@ class Game extends React.Component{
         }
     }
     handleIntervalChanges = (e) => {
-        this.setState({ interval: e.target.value  });
+        this.setState({ interval: e.target.value });
     }
     runIteration() {
         console.log('Iteration running...');
@@ -112,8 +129,10 @@ class Game extends React.Component{
         this.setState({ cells: this.makeCells() })
 
         this.timeoutHandler = window.setTimeout(() => {
-            this.runIteration();   
+            this.runIteration();
+               
         }, this.state.interval);
+        this.state.generation++;
     }
     assessNeighbor(board, x, y) {
         let neighbors = 0;
@@ -132,16 +151,20 @@ class Game extends React.Component{
     }
 
     render() {
-        const { cells, interval, isRunning } = this.state;
-        
+        const { cells, interval, isRunning, generation, pickColor=false } = this.state;
+        const randomColor1 = this.backgroundColor = Math.floor(Math.random() * Math.floor(255));
+        const randomColor2 = this.backgroundColor = Math.floor(Math.random() * Math.floor(255));
+        const randomColor3 = this.backgroundColor = Math.floor(Math.random() * Math.floor(255));        
         return (
             <div>
                 <div className='Board'
                 style={{
                             width: WIDTH,
                             height: HEIGHT,
-                            backgroundSize: `${CELL_SIZE}px ${CELL_SIZE}px`}}
-                            onClick={this.handleClick}
+                            backgroundSize: `${CELL_SIZE}px ${CELL_SIZE}px`,
+                            backgroundColor: pickColor ? `rgb(${randomColor1}, ${randomColor2}, ${randomColor3})` : '#DA72AD' 
+                        }}
+                            onClick={!isRunning ? this.handleClick : null}
                             ref={(n) => {
                                 this.boardRef = n;}}>
                                 {cells.map(cell => (
@@ -150,10 +173,15 @@ class Game extends React.Component{
                                     />
                                 ))}
                     </div>
-                    <div className = 'ctrl'>Update every <input value={this.state.interval} onChange={this.handleIntervalChanges}/> msec 
+                    <div className = 'ctrl'>Update every <input value={interval} onChange={this.handleIntervalChanges}/> msec 
                     {isRunning ?
                     <button className='btn' onClick={this.stopGame}>Stop</button> :
                     <button className='btn' onClick={this.runGame}>Run</button> }
+                    <button className='btn' onClick={this.handleClear}>Clear</button>
+                    <button className='btn' onClick={this.handleRandom}>Random</button>
+                    <button className='btn' onClick={this.handleRandomColor}>Lightshow Mode</button>
+                    
+                    <div>Current Generation: {generation}</div>
                     </div>
             </div>
         )
