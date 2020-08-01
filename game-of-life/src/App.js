@@ -11,8 +11,10 @@ export default function App() {
   return (
     <main>
     <div className='App'>
+      <nav>
       <NavLink to='/'>Home</NavLink>
       <NavLink to='/about'>About</NavLink>
+      </nav>
       <Welcome />
       <Route exact path='/' component={Game}/>
       <Route path='/about' component={About} />

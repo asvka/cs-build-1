@@ -85,7 +85,7 @@ class Game extends React.Component{
     handleRandom = () => {
         for (let y = 0; y < this.rows; y++){
             for (let x = 0; x < this.cols; x++){
-                this.board[y][x] = (Math.random() >= 0.70);
+                this.board[y][x] = (Math.random() >= 0.80);
             }
         }
         this.setState({ cells: this.makeCells() });
@@ -162,7 +162,7 @@ class Game extends React.Component{
                             width: WIDTH,
                             height: HEIGHT,
                             backgroundSize: `${CELL_SIZE}px ${CELL_SIZE}px`,
-                            backgroundColor: pickColor ? `rgb(${randomColor1}, ${randomColor2}, ${randomColor3})` : '#DA72AD' 
+                            backgroundColor: pickColor ? `rgb(${randomColor1}, ${randomColor2}, ${randomColor3})` : '#fab1e5' 
                         }}
                             onClick={!isRunning ? this.handleClick : null}
                             ref={(n) => {
@@ -173,15 +173,18 @@ class Game extends React.Component{
                                     />
                                 ))}
                     </div>
+                    <div className='ctrl-container'>
                     <div className = 'ctrl'>Update every <input value={interval} onChange={this.handleIntervalChanges}/> msec 
+                    <div className='btn-container'>
                     {isRunning ?
-                    <button className='btn' onClick={this.stopGame}>Stop</button> :
-                    <button className='btn' onClick={this.runGame}>Run</button> }
-                    <button className='btn' onClick={this.handleClear}>Clear</button>
-                    <button className='btn' onClick={this.handleRandom}>Random</button>
-                    <button className='btn' onClick={this.handleRandomColor}>Lightshow Mode</button>
-                    
-                    <div>Current Generation: {generation}</div>
+                    <button className='btn' onClick={this.stopGame}><i class="fas fa-pause"/></button> :
+                    <button className='btn' onClick={this.runGame}><i class="fas fa-play"/></button> }
+                    <button className='btn' onClick={this.handleClear}><i class="fas fa-stop"/></button>
+                    <button className='btn' onClick={this.handleRandom}><i class="fas fa-random"/></button>
+                    <button className='btn' onClick={this.handleRandomColor}><i class="far fa-star"/></button>
+                    </div>
+                    </div>
+                    <div className='gen-container'>Current Generation: {generation}</div>
                     </div>
             </div>
         )
