@@ -80,7 +80,7 @@ class Game extends React.Component{
 
     handleClear = () => {
         this.board = this.makeEmptyBoard();
-        this.setState({ cells: this.makeCells(), generation: 0 });
+        this.setState({ cells: this.makeCells(), generation: 0, pickColor: false });
     }
     handleRandom = () => {
         for (let y = 0; y < this.rows; y++){
@@ -108,17 +108,17 @@ class Game extends React.Component{
         console.log('Iteration running...');
         let newBoard = this.makeEmptyBoard();
 
-        for (let y = 0; y < this.rows; y++){
-            for (let x = 0; x < this.cols; x++){
+        for (let y = 0; y < this.rows; y++) {
+            for (let x = 0; x < this.cols; x++) {
                 let neighbors = this.assessNeighbor(this.board, x, y);
-                if (this.board[y][x]){
-                    if (neighbors === 2 || neighbors === 3){
+                if (this.board[y][x]) {
+                    if (neighbors === 2 || neighbors === 3) {
                         newBoard[y][x] = true;
                     } else {
-                        newBoard[y][x] = true;
+                        newBoard[y][x] = false;
                     }
                 } else {
-                    if (!this.board[y][x] && neighbors === 3){
+                    if (!this.board[y][x] && neighbors === 3) {
                         newBoard[y][x] = true;
                     }
                 }
