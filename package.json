@@ -5,7 +5,10 @@
   "repository": "https://github.com/asvka/cs-build-1.git",
   "author": "Anthony M Hernandez <55599397+asvka@users.noreply.github.com>",
   "license": "MIT",
-  
+  "scripts":{
+    "start": "react-scripts start",
+    "build": "react-scripts start"
+  },
   "dependencies": {
     "axios": "^0.19.2",
     "canvas": "^2.6.1",
